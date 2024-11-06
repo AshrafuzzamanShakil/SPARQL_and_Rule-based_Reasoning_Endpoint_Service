@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARQL and Rule-based Reasoning Service</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 500px;
+            background-color: #fff;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .container h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            color: #333;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>SPARQL and Rule-based Reasoning Service</h2>
+        <form id="queryForm">
+            <label for="url">URL of XHTML file with RDFa content:</label>
+            <input type="text" id="url" name="url" placeholder="Enter the URL..." required>
+
+            <label for="rules">Rules (optional):</label>
+            <textarea id="rules" name="rules" placeholder="Enter rules in supported format..."></textarea>
+
+            <label for="sparql">SPARQL Query:</label>
+            <textarea id="sparql" name="sparql" placeholder="Enter your SPARQL query..." required></textarea>
+
+            <button type="button" onclick="executeQuery()">Run Query</button>
+        </form>
+
+        <div class="result" id="result">Query results will appear here...</div>
+    </div>
+
+    <script>
+    async function executeQuery() {
+        const url = document.getElementById("url").value;
+        const rules = document.getElementById("rules").value;
+        const sparqlQuery = document.getElementById("sparql").value;
+        const resultDiv = document.getElementById("result");
+
+        try {
+            const response = await fetch('http://users.jyu.fi/~mdashraf/myindividuals.xhtml', {  // Adjust the URL if needed
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url, rules, sparql: sparqlQuery })
+            });
+
+            if (!response.ok) {
+                throw new Error("Error: " + response.statusText);
+            }
+
+            const data = await response.json();
+            resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (error) {
+            resultDiv.innerHTML = `<p style="color: red;">${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>
